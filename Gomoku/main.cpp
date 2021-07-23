@@ -18,7 +18,7 @@ class Button
 public:
     Button(int left, int top, int width, int height, LPCTSTR text);
     void Draw();
-    bool isClick(MOUSEMSG* pMsg);
+    bool isClick(EASYXMSG* msg);
 
 private:
     int left = 0;
@@ -46,10 +46,10 @@ void Button::Draw()
     outtextxy(left + 10, top + 15, text);
 }
 
-bool Button::isClick(MOUSEMSG* pMsg)
+bool Button::isClick(EASYXMSG* msg)
 {
-    if (pMsg->x > left && pMsg->x < left + width && pMsg->y > top && pMsg->y < top + height)
-        if (pMsg->mkLButton)
+    if (msg->x > left && msg->x < left + width && msg->y > top && msg->y < top + height)
+        if (msg->lbutton)
             return true;
 
     return false;
@@ -197,14 +197,14 @@ int main()
         DrawChessboard();
 
         // 检测鼠标点击
-        MOUSEMSG pMsg;
-        if (PeekMouseMsg(&pMsg, true))
+        EASYXMSG msg;
+        if (peekmessage(&msg, true))
         {
-            if (pMsg.mkLButton)
+            if (msg.lbutton)
             {
                 // 计算鼠标单击的格子
-                int gridX = (pMsg.x - GRID_LEFT + GRID_SIZE / 2) / GRID_SIZE;
-                int gridY = (pMsg.y + GRID_SIZE / 2) / GRID_SIZE;
+                int gridX = (msg.x - GRID_LEFT + GRID_SIZE / 2) / GRID_SIZE;
+                int gridY = (msg.y + GRID_SIZE / 2) / GRID_SIZE;
 
                 // 判断是否为有效单击
                 if (0 <= gridX && gridX < BOARD_SIZE && 0 <= gridY && gridY < BOARD_SIZE)
@@ -223,7 +223,7 @@ int main()
             }
 
             // 检测重新开始按钮
-            if (restartButton->isClick(&pMsg))
+            if (restartButton->isClick(&msg))
             {
                 initBoard();
                 success = Player::NONE;
